@@ -2,9 +2,11 @@ import type { ReactNode } from "react";
 
 interface ShellProps {
   children: ReactNode;
+  sidebar?: ReactNode;
+  dock?: ReactNode;
 }
 
-export function Shell({ children }: ShellProps) {
+export function Shell({ children, sidebar, dock }: ShellProps) {
   return (
     <>
       {/* Desktop: sidebar + main */}
@@ -18,11 +20,9 @@ export function Shell({ children }: ShellProps) {
           }}
         >
           <div className="p-6 font-bold text-lg" style={{ fontFamily: "Fraunces, serif" }}>
-            APPNAME
+            Racing
           </div>
-          <nav className="flex-1 px-4">
-            {/* Add nav items here */}
-          </nav>
+          {sidebar}
           <div className="p-4 text-xs" style={{ color: "var(--muted)" }}>
             <a
               href="https://freeappstore.online"
@@ -35,29 +35,21 @@ export function Shell({ children }: ShellProps) {
             </a>
           </div>
         </aside>
-        <main className="flex-1 overflow-auto p-8">{children}</main>
+        <main className="flex-1 overflow-hidden">{children}</main>
       </div>
 
       {/* Mobile: header + main + dock */}
       <div className="flex flex-col h-screen md:hidden">
         <header
-          className="flex items-center px-4 h-14 border-b shrink-0"
+          className="flex items-center justify-between px-4 h-14 border-b shrink-0"
           style={{ borderColor: "var(--line)", background: "var(--panel)" }}
         >
           <span className="font-bold" style={{ fontFamily: "Fraunces, serif" }}>
-            APPNAME
+            Racing
           </span>
+          {dock && <div className="flex items-center gap-3">{dock}</div>}
         </header>
-        <main className="flex-1 overflow-auto p-4">{children}</main>
-        <nav
-          className="flex items-center justify-around h-16 border-t shrink-0"
-          style={{
-            borderColor: "var(--line)",
-            background: "var(--dock)",
-          }}
-        >
-          {/* Add dock items here */}
-        </nav>
+        <main className="flex-1 overflow-hidden">{children}</main>
       </div>
     </>
   );

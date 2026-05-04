@@ -1,5 +1,5 @@
 {
-  "name": "@APPNAME/web",
+  "name": "@racing/web",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,14 +8,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.184.0",
     "@vitejs/plugin-react": "^4.3",
     "tailwindcss": "^4.1",
     "typescript": "^5.7",
