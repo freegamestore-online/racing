@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Shell } from "./components/Shell";
 import { Game } from "./components/Game";
+import { Leaderboard } from "./components/Leaderboard";
+import { useLeaderboard } from "./hooks/useLeaderboard";
 import type { GamePhase } from "./types";
 
 const BEST_SCORE_KEY = "freerace-best";
@@ -15,6 +17,7 @@ export default function App() {
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(getBestScore);
   const scoreRef = useRef(0);
+  const { topScores, recentScores, submitScore, loading } = useLeaderboard("racing");
 
   const handleScore = useCallback((s: number) => {
     scoreRef.current = s;
@@ -28,8 +31,9 @@ export default function App() {
       localStorage.setItem(BEST_SCORE_KEY, String(final));
       setBestScore(final);
     }
+    submitScore(final);
     setPhase("over");
-  }, []);
+  }, [submitScore]);
 
   const start = useCallback(() => {
     setScore(0);
@@ -72,6 +76,15 @@ export default function App() {
               {phase === "menu" ? "Start" : "Play Again"}
             </button>
           )}
+          <div
+            className="mt-2 border-t"
+            style={{ borderColor: "var(--line)" }}
+          >
+            <div className="text-xs font-semibold px-4 pt-3" style={{ color: "var(--muted)" }}>
+              Leaderboard
+            </div>
+            <Leaderboard topScores={topScores} recentScores={recentScores} loading={loading} />
+          </div>
         </nav>
       }
       dock={
@@ -105,7 +118,7 @@ export default function App() {
               </p>
             )}
             <p style={{ color: "var(--muted)" }}>
-              Dodge traffic. Arrow keys or swipe to steer.
+              Dodge traffic. Arrow keys, tap, or swipe to steer.
             </p>
             <button
               onClick={start}
