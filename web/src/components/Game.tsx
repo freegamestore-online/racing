@@ -224,6 +224,7 @@ function GameScene({ onScore, onGameOver, paused }: GameProps) {
   const onScoreRef = useRef(onScore);
   const onGameOverRef = useRef(onGameOver);
   const pausedRef = useRef(paused);
+  const { gl } = useThree();
   onScoreRef.current = onScore;
   onGameOverRef.current = onGameOver;
   pausedRef.current = paused;
@@ -265,8 +266,9 @@ function GameScene({ onScore, onGameOver, paused }: GameProps) {
 
       // If it was a quick tap (< 200ms) with minimal movement, use tap-based controls
       if (elapsed < 200 && Math.abs(dx) < 20 && Math.abs(dy) < 20) {
-        const screenWidth = window.innerWidth;
-        if (touch.clientX < screenWidth / 2) {
+        const rect = gl.domElement.getBoundingClientRect();
+        const midX = rect.left + rect.width / 2;
+        if (touch.clientX < midX) {
           changeLane(-1);
         } else {
           changeLane(1);
@@ -437,17 +439,21 @@ function MobileControls({ onLeft, onRight }: { onLeft: () => void; onRight: () =
 }
 
 export function Game({ onScore, onGameOver, paused }: GameProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
+    const check = () => {
+      const w = containerRef.current?.clientWidth ?? window.innerWidth;
+      setIsMobile(w < 768 || "ontouchstart" in window);
+    };
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
   return (
-    <div className="relative w-full h-full">
+    <div ref={containerRef} className="relative w-full h-full">
       <Canvas
         camera={{ position: [0, 14, 38], fov: 55, near: 0.1, far: 250 }}
         style={{ width: "100%", height: "100%" }}
