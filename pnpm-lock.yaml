@@ -10,6 +10,9 @@ importers:
 
   web:
     dependencies:
+      '@freeappstore/games':
+        specifier: ^0.3.0
+        version: 0.3.0(react@19.2.5)
       '@react-three/drei':
         specifier: ^10.7.7
         version: 10.7.7(@react-three/fiber@9.6.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(three@0.184.0))(@types/react@19.2.14)(@types/three@0.184.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(three@0.184.0)
@@ -301,6 +304,12 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@freeappstore/games@0.3.0':
+    resolution: {integrity: sha512-ZR9VMo+7/FZXYhN/TayL2VmInH9ztJfjsN56BYhEHGWcdRQKXY/YGZYOUOgQ0KzYARIosbf2Wx6eBF68KeGSwA==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      react: ^19.0.0
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -1343,6 +1352,10 @@ snapshots:
 
   '@esbuild/win32-x64@0.25.12':
     optional: true
+
+  '@freeappstore/games@0.3.0(react@19.2.5)':
+    dependencies:
+      react: 19.2.5
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
