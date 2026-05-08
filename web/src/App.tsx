@@ -60,6 +60,7 @@ export default function App() {
             { label: "Best", value: bestScore },
           ]}
           actions={<GameAuth />}
+          rules={<div><h3 style={{fontWeight:700}}>Racing</h3><h4 style={{fontWeight:600}}>Controls</h4><ul><li>Arrow keys or swipe left/right to change lanes</li></ul><h4 style={{fontWeight:600}}>Rules</h4><ul><li>3D endless racing</li><li>Dodge oncoming traffic by changing lanes</li><li>Speed increases over time</li><li>How far can you go?</li></ul></div>}
         />
       }
     >
