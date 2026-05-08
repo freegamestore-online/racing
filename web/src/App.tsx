@@ -15,6 +15,7 @@ export default function App() {
   const [phase, setPhase] = useState<GamePhase>("playing");
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(getBestScore);
+  const [paused, setPaused] = useState(false);
   const scoreRef = useRef(0);
   const { submitScore } = useLeaderboard("racing");
 
@@ -59,6 +60,9 @@ export default function App() {
             { label: "Score", value: score, accent: true },
             { label: "Best", value: bestScore },
           ]}
+          onPlayPause={phase === "playing" ? () => setPaused(p => !p) : undefined}
+          paused={paused}
+          onRestart={start}
           actions={<GameAuth />}
           rules={<div><h3 style={{fontWeight:700}}>Racing</h3><h4 style={{fontWeight:600}}>Controls</h4><ul><li>Arrow keys or swipe left/right to change lanes</li></ul><h4 style={{fontWeight:600}}>Rules</h4><ul><li>3D endless racing</li><li>Dodge oncoming traffic by changing lanes</li><li>Speed increases over time</li><li>How far can you go?</li></ul></div>}
         />
@@ -66,7 +70,7 @@ export default function App() {
     >
       <div className="relative w-full h-full">
         {phase === "playing" ? (
-          <Game onScore={handleScore} onGameOver={handleGameOver} />
+          <Game onScore={handleScore} onGameOver={handleGameOver} paused={paused} />
         ) : (
           <div className="flex flex-col items-center justify-center h-full gap-4">
             <p

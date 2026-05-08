@@ -18,6 +18,7 @@ const CAR_COLORS = ["#ef4444", "#f59e0b", "#10b981", "#8b5cf6", "#ec4899", "#f97
 interface GameProps {
   onScore: (score: number) => void;
   onGameOver: () => void;
+  paused?: boolean;
 }
 
 interface GameState {
@@ -212,7 +213,7 @@ function CameraRig() {
   return null;
 }
 
-function GameScene({ onScore, onGameOver }: GameProps) {
+function GameScene({ onScore, onGameOver, paused }: GameProps) {
   const state = useRef<GameState>(createInitialState());
   const playerX = useRef<number>(LANE_X[1]);
   const roadOffsetRef = useRef<number>(0);
@@ -222,8 +223,10 @@ function GameScene({ onScore, onGameOver }: GameProps) {
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const onScoreRef = useRef(onScore);
   const onGameOverRef = useRef(onGameOver);
+  const pausedRef = useRef(paused);
   onScoreRef.current = onScore;
   onGameOverRef.current = onGameOver;
+  pausedRef.current = paused;
 
   const changeLane = (dir: -1 | 1) => {
     const s = state.current;
@@ -294,7 +297,7 @@ function GameScene({ onScore, onGameOver }: GameProps) {
 
   useFrame((_, delta) => {
     const s = state.current;
-    if (!s.alive) return;
+    if (!s.alive || pausedRef.current) return;
 
     const dt = Math.min(delta, 0.05);
     s.time += dt;
@@ -433,7 +436,7 @@ function MobileControls({ onLeft, onRight }: { onLeft: () => void; onRight: () =
   );
 }
 
-export function Game({ onScore, onGameOver }: GameProps) {
+export function Game({ onScore, onGameOver, paused }: GameProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -449,7 +452,7 @@ export function Game({ onScore, onGameOver }: GameProps) {
         camera={{ position: [0, 14, 38], fov: 55, near: 0.1, far: 250 }}
         style={{ width: "100%", height: "100%" }}
       >
-        <GameScene onScore={onScore} onGameOver={onGameOver} />
+        <GameScene onScore={onScore} onGameOver={onGameOver} paused={paused} />
       </Canvas>
       {isMobile && (
         <MobileControls
