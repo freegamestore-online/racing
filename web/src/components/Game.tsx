@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { useGameSounds } from "@freegamestore/games";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import type { Obstacle } from "../types";
@@ -224,6 +225,9 @@ function GameScene({ onScore, onGameOver, paused }: GameProps) {
   const onScoreRef = useRef(onScore);
   const onGameOverRef = useRef(onGameOver);
   const pausedRef = useRef(paused);
+  const sounds = useGameSounds();
+  const soundsRef = useRef(sounds);
+  soundsRef.current = sounds;
   const { gl } = useThree();
   onScoreRef.current = onScore;
   onGameOverRef.current = onGameOver;
@@ -352,6 +356,7 @@ function GameScene({ onScore, onGameOver, paused }: GameProps) {
       const ox = LANE_X[obs.lane] ?? 0;
       if (Math.abs(px - ox) < 1.1 && Math.abs(pz - obs.z) < 2.2) {
         s.alive = false;
+        soundsRef.current.playGameOver();
         onGameOverRef.current();
         return;
       }
