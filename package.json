@@ -8,6 +8,7 @@
     "dev": "pnpm --filter @racing/web dev",
     "build": "pnpm --filter @racing/web build",
     "preview": "pnpm --filter @racing/web preview",
+    "test": "pnpm --filter @racing/web test",
     "typecheck": "pnpm --filter @racing/web exec tsc -b"
   }
 }

@@ -18,6 +18,19 @@ const WHEEL_POSITIONS: [number, number, number][] = [
   [0.7, -0.2, -0.9],
 ];
 
+function Wheels() {
+  return (
+    <>
+      {WHEEL_POSITIONS.map((pos, i) => (
+        <mesh key={i} position={pos}>
+          <boxGeometry args={[0.2, 0.3, 0.5]} />
+          <meshStandardMaterial color="#1a1a1a" />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
 function PlayerCar({ xRef }: { xRef: React.RefObject<number> }) {
   const group = useRef<THREE.Group>(null!);
 
@@ -53,12 +66,7 @@ function PlayerCar({ xRef }: { xRef: React.RefObject<number> }) {
         <boxGeometry args={[0.3, 0.15, 0.02]} />
         <meshStandardMaterial color="#ff3333" emissive="#ff3333" emissiveIntensity={0.8} />
       </mesh>
-      {WHEEL_POSITIONS.map((pos, i) => (
-        <mesh key={i} position={pos}>
-          <boxGeometry args={[0.2, 0.3, 0.5]} />
-          <meshStandardMaterial color="#1a1a1a" />
-        </mesh>
-      ))}
+      <Wheels />
     </group>
   );
 }
@@ -93,24 +101,16 @@ function ObstacleCar({ obstacle }: { obstacle: Obstacle }) {
         <boxGeometry args={[0.25, 0.2, 0.02]} />
         <meshStandardMaterial color="#fef08a" emissive="#fef08a" emissiveIntensity={1.0} />
       </mesh>
-      {WHEEL_POSITIONS.map((pos, i) => (
-        <mesh key={i} position={pos}>
-          <boxGeometry args={[0.2, 0.3, 0.5]} />
-          <meshStandardMaterial color="#1a1a1a" />
-        </mesh>
-      ))}
+      <Wheels />
     </group>
   );
 }
 
 function Road({ roadOffsetRef }: { roadOffsetRef: React.RefObject<number> }) {
-  const dashesLeftRef = useRef<THREE.Group>(null!);
-  const dashesRightRef = useRef<THREE.Group>(null!);
+  const dashesRef = useRef<THREE.Group>(null!);
 
   useFrame(() => {
-    const offset = roadOffsetRef.current ?? 0;
-    if (dashesLeftRef.current) dashesLeftRef.current.position.z = offset % 5;
-    if (dashesRightRef.current) dashesRightRef.current.position.z = offset % 5;
+    dashesRef.current.position.z = (roadOffsetRef.current ?? 0) % 5;
   });
 
   return (
@@ -130,31 +130,16 @@ function Road({ roadOffsetRef }: { roadOffsetRef: React.RefObject<number> }) {
         <planeGeometry args={[16, ROAD_Z]} />
         <meshStandardMaterial color="#166534" />
       </mesh>
-      {/* Lane dashes - left lane divider (scrolling) */}
-      <group ref={dashesLeftRef}>
-        {Array.from({ length: 50 }).map((_, i) => (
-          <mesh
-            key={`l${i}`}
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[-1.25, 0.01, -i * 5 + ROAD_Z / 4]}
-          >
-            <planeGeometry args={[0.15, 2.5]} />
-            <meshStandardMaterial color="#fbbf24" />
-          </mesh>
-        ))}
-      </group>
-      {/* Lane dashes - right lane divider (scrolling) */}
-      <group ref={dashesRightRef}>
-        {Array.from({ length: 50 }).map((_, i) => (
-          <mesh
-            key={`r${i}`}
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[1.25, 0.01, -i * 5 + ROAD_Z / 4]}
-          >
-            <planeGeometry args={[0.15, 2.5]} />
-            <meshStandardMaterial color="#fbbf24" />
-          </mesh>
-        ))}
+      {/* Lane dividers (scrolling dashes) */}
+      <group ref={dashesRef}>
+        {[-1.25, 1.25].map((x) =>
+          Array.from({ length: 50 }).map((_, i) => (
+            <mesh key={`${x}:${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.01, -i * 5 + ROAD_Z / 4]}>
+              <planeGeometry args={[0.15, 2.5]} />
+              <meshStandardMaterial color="#fbbf24" />
+            </mesh>
+          )),
+        )}
       </group>
       {/* Road edge lines (solid white) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-4.4, 0.01, -ROAD_Z / 4]}>
@@ -299,60 +284,45 @@ function GameScene({ onScore, onGameOver, paused }: GameProps) {
   );
 }
 
+const ARROW_BUTTON_STYLE: React.CSSProperties = {
+  width: 64,
+  height: 64,
+  borderRadius: "1.25rem",
+  background: "rgba(255,255,255,0.15)",
+  backdropFilter: "blur(4px)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  color: "#fff",
+  fontSize: 28,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  touchAction: "none",
+};
+
 function MobileControls({ onLeft, onRight }: { onLeft: () => void; onRight: () => void }) {
+  const buttons = [
+    { label: "Move left", glyph: "\u25C0", onPress: onLeft },
+    { label: "Move right", glyph: "\u25B6", onPress: onRight },
+  ];
   return (
     <div
       className="absolute bottom-4 left-0 right-0 flex justify-between px-4 pointer-events-none"
       style={{ zIndex: 10 }}
     >
-      <button
-        onPointerDown={(e) => {
-          e.stopPropagation();
-          onLeft();
-        }}
-        className="pointer-events-auto select-none"
-        style={{
-          width: 64,
-          height: 64,
-          borderRadius: "1.25rem",
-          background: "rgba(255,255,255,0.15)",
-          backdropFilter: "blur(4px)",
-          border: "1px solid rgba(255,255,255,0.2)",
-          color: "#fff",
-          fontSize: 28,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          touchAction: "none",
-        }}
-        aria-label="Move left"
-      >
-        &#9664;
-      </button>
-      <button
-        onPointerDown={(e) => {
-          e.stopPropagation();
-          onRight();
-        }}
-        className="pointer-events-auto select-none"
-        style={{
-          width: 64,
-          height: 64,
-          borderRadius: "1.25rem",
-          background: "rgba(255,255,255,0.15)",
-          backdropFilter: "blur(4px)",
-          border: "1px solid rgba(255,255,255,0.2)",
-          color: "#fff",
-          fontSize: 28,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          touchAction: "none",
-        }}
-        aria-label="Move right"
-      >
-        &#9654;
-      </button>
+      {buttons.map(({ label, glyph, onPress }) => (
+        <button
+          key={label}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            onPress();
+          }}
+          className="pointer-events-auto select-none"
+          style={ARROW_BUTTON_STYLE}
+          aria-label={label}
+        >
+          {glyph}
+        </button>
+      ))}
     </div>
   );
 }
