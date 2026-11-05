@@ -235,7 +235,7 @@ function GameScene({ onScore, onGameOver, paused }: GameProps) {
 
   const changeLane = (dir: -1 | 1) => {
     const s = state.current;
-    if (!s.alive) return;
+    if (!s.alive || pausedRef.current) return;
     const newLane = s.lane + dir;
     if (newLane >= 0 && newLane <= 2) {
       s.lane = newLane;
